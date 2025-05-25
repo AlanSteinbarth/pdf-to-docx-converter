@@ -29,21 +29,21 @@ Program do konwersji plików PDF na format DOCX (Microsoft Word) lub TXT z obsł
 
 ## Instalacja
 1. Zainstaluj wymagane biblioteki Python:
-   ```
+   ```bash
    pip install pdf2docx pdf2image pytesseract pillow pdfminer.six
    ```
 2. Pobierz i zainstaluj Poppler:
-   - [Poppler dla Windows (link do pobrania)](https://github.com/oschwartz10612/poppler-windows/releases)
+   - [Poppler dla Windows](https://github.com/oschwartz10612/poppler-windows/releases)
    - Rozpakuj do folderu, np. `C:/Program Files/poppler`
    - Dodaj ścieżkę do `.../poppler/Library/bin` do zmiennej PATH
 3. Pobierz i zainstaluj Tesseract OCR:
-   - [Tesseract OCR (link do pobrania)](https://github.com/tesseract-ocr/tesseract)
+   - [Tesseract OCR](https://github.com/tesseract-ocr/tesseract)
    - Zainstaluj i dodaj do PATH (np. `C:/Program Files/Tesseract-OCR`)
    - Dla polskiego OCR doinstaluj język polski (`pol`)
 
 ## Uruchomienie
 1. Uruchom program za pomocą:
-   ```
+   ```bash
    python app.py
    ```
 2. Dodaj pliki PDF do listy (przeciągnij lub użyj przycisku "Wybierz pliki"/"Dodaj folder")
@@ -53,15 +53,17 @@ Program do konwersji plików PDF na format DOCX (Microsoft Word) lub TXT z obsł
 6. Możesz anulować konwersję w dowolnym momencie
 
 ## Opis interfejsu
-- **Wybierz pliki** – dodaje pliki PDF do listy
-- **Dodaj folder** – dodaje wszystkie pliki PDF z folderu i podfolderów
-- **Usuń wybrane** – usuwa zaznaczone pliki z listy (multiselect)
-- **Wyczyść listę** – usuwa wszystkie pliki z listy
-- **Podgląd obrazu po preprocessingu** – pokazuje, jak wygląda strona po przygotowaniu do OCR
-- **Podgląd tekstu** – wyświetla fragment tekstu z wybranego PDF
-- **Logi** – szczegółowy przebieg konwersji i komunikaty
-- **Anuluj** – przerywa konwersję
-- **Pomoc** – instrukcja, FAQ, linki do Poppler/Tesseract
+| Przycisk/Funkcja | Opis |
+|-----------------|------|
+| **Wybierz pliki** | Dodaje pliki PDF do listy |
+| **Dodaj folder** | Dodaje wszystkie pliki PDF z folderu i podfolderów |
+| **Usuń wybrane** | Usuwa zaznaczone pliki z listy (multiselect) |
+| **Wyczyść listę** | Usuwa wszystkie pliki z listy |
+| **Podgląd obrazu** | Pokazuje, jak wygląda strona po przygotowaniu do OCR |
+| **Podgląd tekstu** | Wyświetla fragment tekstu z wybranego PDF |
+| **Logi** | Szczegółowy przebieg konwersji i komunikaty |
+| **Anuluj** | Przerywa konwersję |
+| **Pomoc** | Instrukcja, FAQ, linki do Poppler/Tesseract |
 
 ## FAQ (Często zadawane pytania)
 1. **Co to jest OCR?**
@@ -83,8 +85,8 @@ Program do konwersji plików PDF na format DOCX (Microsoft Word) lub TXT z obsł
 - Jakość OCR zależy od jakości skanu
 
 ## Autor
-Alan Steinbarth
-Wersja: 3.1 (OCR, preprocessing, nowoczesny GUI)
+Alan Steinbarth  
+Wersja: 3.1 (OCR, preprocessing, nowoczesny GUI)  
 Email: alan.steinbarth@gmail.com
 
 ## Licencja

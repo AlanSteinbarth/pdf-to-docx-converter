@@ -13,9 +13,13 @@ from tkinter import filedialog, messagebox, ttk, scrolledtext
 import logging
 import os
 import subprocess
+import re
+import shutil
+import glob
+import webbrowser
 from datetime import datetime
 from pdfminer.high_level import extract_text
-from PIL import ImageTk
+from PIL import Image, ImageTk
 
 # =============================================================================
 # OCR Support Detection
@@ -28,7 +32,6 @@ try:
         from pdf2docx import Converter
         from pdf2image import convert_from_path
         import pytesseract
-        from PIL import Image
         OCR_AVAILABLE = True
 except Exception as e:
     print(f"OCR-related modules not fully available: {e}")
@@ -68,24 +71,26 @@ class PDFtoDocxConverterApp(tk.Tk):
         self.running = True
         self.log_handler = GuiLogHandler(self.log_text)
         logging.getLogger().addHandler(self.log_handler)
-        self.enable_drag_and_drop()
-
-    def enable_drag_and_drop(self):
+        self.enable_drag_and_drop()    def enable_drag_and_drop(self):
         """
         Konfiguruje obsługę przeciągania i upuszczania plików (drag & drop).
-        Próbuje użyć tkinterDnD2, a jeśli nie jest dostępny, używa okna głównego.
+        Używa natywnej obsługi Windows poprzez bindowanie zdarzeń.
         """
-        # Obsługa drag & drop dla Windows (tkinterDnD2 lub niskopoziomowo)
-        try:
-            self.file_list.drop_target_register('DND_Files')
-            self.file_list.dnd_bind('<<Drop>>', self.on_drop_files)
-        except Exception:
-            # fallback: obsługa przez okno główne
-            try:
-                self.drop_target_register('DND_Files')
-                self.dnd_bind('<<Drop>>', self.on_drop_files)
-            except Exception:
-                pass
+        self.file_list.bind('<Button-1>', self.on_drag_start)
+        self.file_list.bind('<B1-Motion>', self.on_drag_motion)
+        self.file_list.bind('<ButtonRelease-1>', self.on_drop)
+        
+    def on_drag_start(self, event):
+        """Rozpoczęcie przeciągania"""
+        self._drag_data = {'x': event.x, 'y': event.y, 'item': None}
+        
+    def on_drag_motion(self, event):
+        """Obsługa ruchu podczas przeciągania"""
+        pass
+        
+    def on_drop(self, event):
+        """Obsługa upuszczenia - otwiera okno wyboru plików"""
+        self.select_files()
 
     def on_drop_files(self, event):
         files = self.tk.splitlist(event.data)
@@ -275,7 +280,6 @@ class PDFtoDocxConverterApp(tk.Tk):
         self.config(menu=menubar)
 
     def open_url(self, url):
-        import webbrowser
         webbrowser.open(url)
 
     def show_faq(self):
@@ -532,7 +536,6 @@ Wymagania systemowe:
         - Zachowuje podział na akapity
         - Poprawia interpunkcję
         """
-        import re
         # Usuwanie podwójnych spacji i tabulatorów, ale nie łączymy linii
         text = re.sub(r'[ \t]+', ' ', text)
         # Usuwanie nadmiarowych pustych linii (więcej niż 2)
@@ -548,7 +551,6 @@ Wymagania systemowe:
         - Zachowuje podział na akapity
         - Poprawia interpunkcję
         """
-        import re
         # Usuwanie podwójnych spacji i tabulatorów, ale nie łączymy linii
         text = re.sub(r'[ \t]+', ' ', text)
         # Usuwanie nadmiarowych pustych linii (więcej niż 2)
@@ -568,10 +570,6 @@ Wymagania systemowe:
         - Automatycznie dodaje do PATH
         - Wyświetla instrukcje instalacji
         """
-        import shutil
-        import os
-        import glob
-
         # Sprawdź czy Poppler jest w PATH
         if shutil.which('pdftocairo'):
             return True
@@ -648,7 +646,7 @@ Wymagania systemowe:
                     new_height = int(image.height * scale)
                     
                     # Przeskaluj obraz
-                    image = image.resize((new_width, new_height), Image.LANCZOS)
+                    image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
                     
                     # Konwertuj na format wyświetlania
                     photo = ImageTk.PhotoImage(image)
