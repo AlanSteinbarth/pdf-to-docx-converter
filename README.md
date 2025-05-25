@@ -1,5 +1,11 @@
 # Konwerter PDF -> DOCX/TXT z OCR
 
+![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)
+![Python](https://img.shields.io/badge/python-3.x-green.svg)
+![License](https://img.shields.io/badge/license-MIT-yellow.svg)
+
+> 🆕 Wersja 3.1 - Znaczące usprawnienia w OCR, preprocessingu obrazu i obsłudze wielu plików. Teraz z pełnym wsparciem dla języka polskiego!
+
 Program do konwersji plików PDF na format DOCX (Microsoft Word) lub TXT z obsługą OCR (rozpoznawania tekstu ze skanów), nowoczesnym interfejsem i zaawansowanymi funkcjami.
 
 ## Najważniejsze funkcje
@@ -79,15 +85,25 @@ Program do konwersji plików PDF na format DOCX (Microsoft Word) lub TXT z obsł
 6. **Gdzie pobrać Poppler i Tesseract?**
    - Linki w menu Pomoc oraz powyżej.
 
-## Znane ograniczenia
-- Program nie obsługuje plików PDF zabezpieczonych hasłem
-- OCR do DOCX nie jest wspierany – wynik OCR zapisywany jest jako TXT
-- Jakość OCR zależy od jakości skanu
+## Testowanie
+Program został gruntownie przetestowany na różnych rodzajach dokumentów PDF:
+- Standardowe dokumenty tekstowe
+- Skany dokumentów
+- Dokumenty wielojęzyczne (polskie i angielskie znaki)
+- Dokumenty zawierające obrazy i tabele
+- Dokumenty o różnej jakości skanowania
+
+## Współpraca
+Jeśli chcesz pomóc w rozwoju projektu:
+1. Przeczytaj [CONTRIBUTING.md](CONTRIBUTING.md)
+2. Rozwidl (fork) repozytorium
+3. Utwórz branch na swoją funkcjonalność (`git checkout -b feature/amazing-feature`)
+4. Zatwierdź zmiany (`git commit -m 'Add amazing feature'`)
+5. Wypchnij branch (`git push origin feature/amazing-feature`)
+6. Otwórz Pull Request
 
 ## Autor
-Alan Steinbarth  
-Wersja: 3.1 (OCR, preprocessing, nowoczesny GUI)  
-Email: alan.steinbarth@gmail.com
+Alan Steinbarth - [GitHub](https://github.com/AlanSteinbarth)
 
 ## Licencja
-Ten program jest dostępny na licencji open source.
+Ten projekt jest objęty licencją MIT - szczegóły w pliku [LICENSE](LICENSE)

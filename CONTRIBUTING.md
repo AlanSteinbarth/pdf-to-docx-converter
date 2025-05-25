@@ -1,6 +1,6 @@
 # Jak pomóc w rozwoju projektu
 
-Dziękujemy za zainteresowanie projektem konwertera PDF! Oto wskazówki jak możesz pomóc w jego rozwoju.
+Dziękuję za zainteresowanie projektem konwertera PDF! Oto wskazówki jak możesz pomóc w jego rozwoju.
 
 ## Zgłaszanie błędów
 

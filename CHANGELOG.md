@@ -1,6 +1,6 @@
 # Historia zmian
 
-## [3.1.0] - 2025-05-23
+## [3.1.0] - 2025-05-25
 
 ### Dodano
 - Wsparcie dla OCR w języku polskim i angielskim
