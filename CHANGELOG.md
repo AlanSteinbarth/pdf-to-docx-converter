@@ -1,5 +1,33 @@
 # Historia zmian
 
+## [3.2.0] - 2024-12-19
+### Dodano ✨
+- **Wieloplatformowe wsparcie** - program działa na Windows, macOS i Linux
+- Automatyczna detekcja systemu operacyjnego z modułem `platform`
+- Inteligentny wybór domyślnego folderu wyjściowego per system operacyjny:
+  - Windows: `%USERPROFILE%\Documents`
+  - macOS: `~/Documents`
+  - Linux: `~/Documents`
+- Wieloplatformowe otwieranie folderów:
+  - Windows: `explorer`
+  - macOS: `open`
+  - Linux: `xdg-open`
+- Rozszerzone instrukcje instalacji dla wszystkich systemów operacyjnych
+- Informacje o systemie w oknie "O autorze"
+- Wieloplatformowa detekcja Poppler i Tesseract z odpowiednimi komunikatami błędów
+
+### Zmieniono 🔧
+- Zaktualizowane FAQ z informacjami o wspieranych systemach operacyjnych
+- Poprawiona obsługa błędów z systemowo-specyficznymi komunikatami
+- Ulepszona dokumentacja z instrukcjami instalacji dla macOS i Linux
+
+### Techniczne 🛠️
+- Usunięto hardkodowane ścieżki Windows
+- Dodano metodę `get_default_output_dir()` z automatyczną detekcją systemu
+- Zaktualizowano `open_output_dir()` z wieloplatformową obsługą
+- Poprawiono `check_poppler()` z detekcją dla różnych systemów operacyjnych
+- Rozszerzono `show_install_instructions()` o wszystkie systemy operacyjne
+
 ## [3.1.0] - 2025-05-25
 
 ### Dodano
