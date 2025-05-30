@@ -1,5 +1,6 @@
-pdf2docx>=0.5.8
-pdf2image>=1.17.0
-pytesseract>=0.3.13
-Pillow>=10.0.0
-pdfminer.six>=20250506
+pdfminer.six
+pillow
+pytesseract
+fitz
+python-docx
+tk

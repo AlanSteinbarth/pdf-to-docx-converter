@@ -1,5 +1,25 @@
 # Historia zmian
 
+## [4.0.0] - 2025-05-30
+### Dodano
+- Automatyczne rozpoznawanie tekstu (OCR) dla PDF-ów bez warstwy tekstowej (skany, zdjęcia)
+- Zaawansowany preprocessing obrazu: autokontrast, wyostrzanie, mocniejsza binarizacja, DPI x3
+- Rozpoznawanie wyłącznie języka polskiego dla lepszej skuteczności OCR
+- Nowy, stabilny i responsywny interfejs (Tkinter, PanedWindow, podgląd PDF)
+- Przycisk "Pomoc / O programie" na górze panelu
+- Pasek postępu, logi, anulowanie konwersji, wsparcie dla wielu plików
+- Obsługa macOS, Windows, Linux
+
+### Zmieniono
+- Usunięto drag & drop (pełna stabilność na wszystkich systemach)
+- Uproszczono kod, usunięto artefakty i stare backupy
+- Poprawiono dokumentację i instrukcje
+
+### Naprawiono
+- Problemy z widocznością przycisków i podglądu na macOS
+- Błędy środowiskowe z pytesseract
+- Błędy layoutu i responsywności
+
 ## [3.2.0] - 2024-12-19
 ### Dodano ✨
 - **Wieloplatformowe wsparcie** - program działa na Windows, macOS i Linux

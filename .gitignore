@@ -9,3 +9,8 @@ build/
 venv/
 env/
 settings.json
+*.exe
+*.bak
+*.tmp
+.DS_Store
+.vscode/

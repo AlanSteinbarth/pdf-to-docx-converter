@@ -1,69 +1,25 @@
-# Jak pomóc w rozwoju projektu
+# Współtworzenie i zgłaszanie błędów
 
-Dziękuję za zainteresowanie projektem konwertera PDF! Oto wskazówki jak możesz pomóc w jego rozwoju.
+Dziękujemy za zainteresowanie rozwojem konwertera PDF -> DOCX/TXT!
 
-## Zgłaszanie błędów
+## Jak zgłosić błąd lub sugestię
+1. Utwórz Issue na GitHubie (opisz problem, system, wersję, logi).
+2. Dołącz przykładowy plik PDF, jeśli to możliwe.
+3. Sprawdź, czy masz zainstalowane Poppler i Tesseract oraz wymagane biblioteki Python.
 
-1. Sprawdź czy błąd nie został już zgłoszony w zakładce Issues
-2. Używaj szablonu zgłoszenia błędu, zawierającego:
-   - Opis problemu
-   - Kroki do odtworzenia
-   - Oczekiwane zachowanie
-   - Rzeczywiste zachowanie
-   - Zrzuty ekranu (jeśli pomocne)
-   - Informacje o systemie operacyjnym i wersjach:
-     - Python
-     - Poppler
-     - Tesseract OCR
-     - Używane biblioteki
-
-## Proponowanie zmian
-
-1. Zrób fork repozytorium
-2. Stwórz nową gałąź dla swoich zmian (`git checkout -b feature/nazwa-funkcji`)
-3. Wprowadź zmiany
-4. Przetestuj zmiany
-5. Utwórz pull request z opisem zmian
-
-## Standardy kodowania
-
-1. Używaj PEP 8 do formatowania kodu Python
-2. Dodawaj komentarze w języku polskim
-3. Wszystkie funkcje powinny mieć docstringi
-4. Zachowaj istniejącą strukturę sekcji w kodzie:
-   - Imports and Configuration
-   - OCR Support Detection
-   - Main Application Class
-   - GUI Components
-   - File Management
-   - Conversion Logic
-   - Text Processing
-   - System Integration
-   - Logging
-5. Używaj znaczących nazw zmiennych i funkcji
+## Jak rozwijać projekt
+1. Forkuj repozytorium
+2. Utwórz nowy branch (np. `feature/nazwa-funkcji`)
+3. Wprowadź zmiany, przetestuj na różnych systemach
+4. Zaktualizuj README.md i CHANGELOG.md
+5. Otwórz Pull Request
 
 ## Testowanie
-
-1. Przetestuj zmiany na różnych systemach operacyjnych
-2. Sprawdź konwersję różnych typów PDF:
-   - PDF z tekstem
-   - Skany dokumentów
-   - PDF z obrazami i tekstem
-   - PDF w różnych językach
-3. Przetestuj interfejs użytkownika:
-   - Drag & drop
-   - Podgląd tekstu i obrazu
-   - Obsługa błędów
-   - Anulowanie konwersji
-4. Upewnij się, że nie wprowadzasz regresji
+- Przetestuj konwersję PDF z tekstem, skanów, zdjęć, plików wielostronicowych
+- Sprawdź interfejs na macOS, Windows, Linux
+- Upewnij się, że OCR działa (log: "Tesseract OCR został pomyślnie zainicjowany.")
+- Sprawdź logi, podgląd PDF, anulowanie konwersji
 
 ## Kontakt
-
-Jeśli masz pytania lub potrzebujesz pomocy:
-1. Utwórz Issue w projekcie
-2. Opisz dokładnie swój problem lub propozycję
-3. Bądź cierpliwy - postaramy się odpowiedzieć jak najszybciej
-
-## Licencja
-
-Projekt jest dostępny na licencji MIT. Twoje kontrybucje również będą objęte tą licencją.
+- Autor: Alan Steinbarth
+- Zgłoszenia: przez Issues na GitHubie

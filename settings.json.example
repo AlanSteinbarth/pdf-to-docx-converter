@@ -1,4 +1,5 @@
 {
-    "output_dir": "~/Documents",
-    "selected_files": []
+    "output_dir": "~/Desktop",
+    "ocr_language": "pol",
+    "dpi": 300
 }
