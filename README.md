@@ -41,6 +41,32 @@ python app.py
 - Usunięto drag & drop (pełna stabilność)
 - Poprawiona dokumentacja
 
+## ENTERPRISE FEATURES
+
+- Zaawansowane logowanie do pliku z rotacją (`logs/app.log`)
+- Konfiguracja przez plik `config.yaml` (output_dir, log_level, ocr_lang)
+- Automatyczne testy jednostkowe (pytest, katalog `tests/`)
+- Gotowy workflow CI/CD (GitHub Actions: `.github/workflows/python-app.yml`)
+
+### Testy automatyczne
+
+Aby uruchomić testy lokalnie:
+
+```bash
+pip install pytest pyyaml
+pytest tests/
+```
+
+Testy uruchamiają się automatycznie przy każdym pushu do gałęzi `main` na GitHubie.
+
+### Konfiguracja
+
+Edytuj plik `config.yaml`, aby zmienić domyślne ustawienia aplikacji (np. katalog wyjściowy, poziom logowania, język OCR).
+
+### Logowanie
+
+Wszystkie logi audytowe zapisywane są do pliku `logs/app.log` z automatyczną rotacją (5 plików po 2MB).
+
 ## Licencja
 MIT
 

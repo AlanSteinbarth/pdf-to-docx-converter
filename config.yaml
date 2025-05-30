@@ -1,0 +1,6 @@
+# Konfiguracja aplikacji PDF to DOCX/TXT Converter (enterprise)
+# Możesz zmienić te ustawienia przed uruchomieniem aplikacji
+
+output_dir: "~/Desktop"  # Domyślny katalog wyjściowy
+log_level: "INFO"         # Poziom logowania: DEBUG, INFO, WARNING, ERROR
+ocr_lang: "pol"           # Język OCR (np. pol, eng)

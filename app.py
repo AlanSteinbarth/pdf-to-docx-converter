@@ -16,6 +16,8 @@ import logging
 from pdfminer.high_level import extract_text, extract_pages
 from PIL import Image, ImageTk
 import fitz
+import logging.handlers
+import yaml
 
 try:
     import pytesseract as pt_module
@@ -66,6 +68,43 @@ logging.basicConfig(
     datefmt='%H:%M:%S'
 )
 
+# --- Enterprise: logowanie do pliku z rotacją ---
+LOG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+LOG_FILE = os.path.join(LOG_DIR, 'app.log')
+file_handler = logging.handlers.RotatingFileHandler(
+    LOG_FILE, maxBytes=2*1024*1024, backupCount=5, encoding='utf-8'
+)
+file_handler.setLevel(logging.INFO)
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
+logging.getLogger().addHandler(file_handler)
+
+# --- Enterprise: ładowanie konfiguracji z config.yaml ---
+def load_config():
+    # Szukaj config.yaml w bieżącym katalogu roboczym (dla testów i uruchomień enterprise)
+    config_path = os.path.join(os.getcwd(), 'config.yaml')
+    default = {
+        'output_dir': os.path.expanduser('~/Desktop'),
+        'log_level': 'INFO',
+        'ocr_lang': 'pol',
+    }
+    if not os.path.exists(config_path):
+        return default
+    try:
+        with open(config_path, 'r', encoding='utf-8') as f:
+            cfg = yaml.safe_load(f)
+        if not isinstance(cfg, dict):
+            return default
+        # Rozszerz domyślne o wartości z pliku
+        merged = default.copy()
+        merged.update({k: v for k, v in cfg.items() if v is not None})
+        merged['output_dir'] = os.path.expanduser(merged['output_dir'])
+        return merged
+    except Exception as e:
+        logging.warning(f"Nie udało się wczytać config.yaml: {e}")
+        return default
+
 class PDFtoDocxConverterApp(tk.Tk):
     def get_default_output_dir(self):
         """Określa domyślny folder wyjściowy w zależności od systemu operacyjnego"""
@@ -98,6 +137,9 @@ class PDFtoDocxConverterApp(tk.Tk):
         self.after(300, lambda: self.attributes('-topmost', False))
 
     def __init__(self):
+        self.app_config = load_config()
+        # Ustaw poziom logowania z config.yaml
+        logging.getLogger().setLevel(self.app_config.get('log_level', 'INFO'))
         super().__init__()
         self.title("Zaawansowany Konwerter PDF v4.0")
         self.geometry("1024x768")
@@ -105,11 +147,12 @@ class PDFtoDocxConverterApp(tk.Tk):
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self.selected_files = []
-        self.output_dir = self.get_default_output_dir()
+        self.output_dir = self.app_config.get('output_dir', self.get_default_output_dir())
         self.output_format = tk.StringVar(value="docx")
         self.conversion_thread = None
         self.cancel_event = threading.Event()
         self.current_preview_image = None
+        self.ocr_lang = self.app_config.get('ocr_lang', 'pol')
 
         self.create_widgets()
         self._setup_logging()
@@ -404,7 +447,7 @@ class PDFtoDocxConverterApp(tk.Tk):
                             threshold = 150  # mocniejsza binarizacja
                             table = [0 if i < threshold else 255 for i in range(256)]
                             img = img.point(table, 'L')
-                            ocr_text = pytesseract.image_to_string(img, lang='pol', config='--psm 6')
+                            ocr_text = pytesseract.image_to_string(img, lang=self.ocr_lang, config='--psm 6')
                             ocr_text = ocr_text.strip()
                             if ocr_text:
                                 ocr_pages_with_text += 1

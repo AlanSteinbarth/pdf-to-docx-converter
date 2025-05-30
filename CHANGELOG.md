@@ -1,5 +1,12 @@
 # Historia zmian
 
+## [4.1.0] - 2025-05-30
+### Dodano
+- ENTERPRISE: logowanie do pliku z rotacją (logs/app.log)
+- ENTERPRISE: konfiguracja przez plik config.yaml (output_dir, log_level, ocr_lang)
+- ENTERPRISE: testy jednostkowe (pytest, katalog tests/)
+- ENTERPRISE: workflow CI/CD (GitHub Actions)
+
 ## [4.0.0] - 2025-05-30
 ### Dodano
 - Automatyczne rozpoznawanie tekstu (OCR) dla PDF-ów bez warstwy tekstowej (skany, zdjęcia)
