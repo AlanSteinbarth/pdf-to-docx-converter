@@ -245,7 +245,7 @@ class PDFtoDocxConverterApp(tk.Tk):
         main_frame = ttk.Frame(about_win, padding=15)
         main_frame.pack(expand=True, fill=tk.BOTH)
         ttk.Label(main_frame, text="Zaawansowany Konwerter PDF", font=("Helvetica", 14, "bold")).pack(pady=(0,10))
-        ttk.Label(main_frame, text="Wersja: 4.0").pack(pady=3)
+        ttk.Label(main_frame, text="Wersja: 4.1.0 Enterprise Edition").pack(pady=3)
         ttk.Label(main_frame, text="Autor: Alan Steinbarth").pack(pady=3)
         ttk.Label(main_frame, text="Wykorzystuje biblioteki: pdf2docx, pdfminer.six, PyMuPDF, Pillow, (opcjonalnie) Pytesseract.").pack(pady=3)
         ttk.Label(main_frame, text="© 2024-2025").pack(pady=3)
