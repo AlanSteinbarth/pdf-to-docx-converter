@@ -1,6 +1,6 @@
 # Historia zmian
 
-## [4.1.0] - 2025-05-30
+## [4.1.0] - 2025-05-31
 ### Dodano
 - ENTERPRISE: logowanie do pliku z rotacją (logs/app.log)
 - ENTERPRISE: konfiguracja przez plik config.yaml (output_dir, log_level, ocr_lang)
