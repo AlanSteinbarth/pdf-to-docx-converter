@@ -4,3 +4,4 @@ pytesseract
 fitz
 python-docx
 tk
+pyyaml

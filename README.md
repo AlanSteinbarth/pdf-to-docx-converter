@@ -1,6 +1,10 @@
 # Konwerter PDF -> DOCX/TXT z OCR
 
-Zaawansowany, wieloplatformowy konwerter PDF na DOCX/TXT z automatycznym rozpoznawaniem tekstu (OCR) dla skanów i zdjęć. Nowoczesny, stabilny interfejs, wsparcie dla macOS, Windows, Linux.
+- **ENTERPRISE FEATURES**: zaawansowane logowanie do pliku z rotacją
+- **ENTERPRISE FEATURES**: konfiguracja przez plik config.yaml
+- **ENTERPRISE FEATURES**: automatyczne testy jednostkowe (pytest)
+- **ENTERPRISE FEATURES**: gotowy workflow CI/CD (GitHub Actions)
+- Wszystkie funkcje z wersji 4.0.0: automatyczny OCR, stabilny interfejs, wieloplatformowośćnsowany, wieloplatformowy konwerter PDF na DOCX/TXT z automatycznym rozpoznawaniem tekstu (OCR) dla skanów i zdjęć. Nowoczesny, stabilny interfejs, wsparcie dla macOS, Windows, Linux.
 
 ## Najważniejsze funkcje
 - Automatyczne rozpoznawanie tekstu (OCR) dla PDF-ów bez warstwy tekstowej (skany, zdjęcia)
@@ -14,7 +18,7 @@ Zaawansowany, wieloplatformowy konwerter PDF na DOCX/TXT z automatycznym rozpozn
 ## Instalacja
 1. Zainstaluj wymagane biblioteki:
    ```bash
-   pip install -r requirements.txt
+   pip3 install -r requirements.txt
    ```
 2. Zainstaluj Poppler i Tesseract OCR:
    - **macOS:**
@@ -31,10 +35,10 @@ Zaawansowany, wieloplatformowy konwerter PDF na DOCX/TXT z automatycznym rozpozn
 
 ## Uruchomienie
 ```bash
-python app.py
+python3 app.py
 ```
 
-## Nowości w wersji 4.0.0 (30.05.2025)
+## Nowości w wersji 4.1.0 (31.05.2025)
 - Automatyczny, skuteczny OCR dla skanów i zdjęć (język polski)
 - Lepsza jakość rozpoznawania tekstu (DPI x3, wyostrzanie, binarizacja)
 - Stabilny, nowoczesny interfejs
@@ -53,7 +57,7 @@ python app.py
 Aby uruchomić testy lokalnie:
 
 ```bash
-pip install pytest pyyaml
+pip3 install pytest pyyaml
 pytest tests/
 ```
 

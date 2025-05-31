@@ -14,3 +14,4 @@ settings.json
 *.tmp
 .DS_Store
 .vscode/
+.pytest_cache/
