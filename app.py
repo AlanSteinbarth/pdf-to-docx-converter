@@ -69,7 +69,7 @@ except ImportError:
     TESSERACT_AVAILABLE = False
     logging.warning("Pytesseract nie jest zainstalowany. Funkcje OCR będą niedostępne.")
     # raise  # USUNIĘTO raise, aplikacja działa bez OCR
-except (OSError, ImportError, AttributeError, RuntimeError) as e:
+except (OSError, AttributeError, RuntimeError) as e:
     TESSERACT_AVAILABLE = False
     logging.error("Błąd podczas inicjalizacji Tesseract: %s", e)
     # raise  # USUNIĘTO raise, aplikacja działa bez OCR
