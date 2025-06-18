@@ -1,18 +1,49 @@
 # =============================================================================
-# PDF to DOCX/TXT Converter with OCR
+# PDF to DOCX/TXT Converter with OCR v4.2.0 Enterprise Edition
 # Author: Alan Steinbarth
-# Version: 4.0 - Advanced PDF Converter with Preview and OCR
+# Date: 19 czerwca 2025
 # =============================================================================
 
+"""
+SPIS TREŚCI:
+1. Importy i konfiguracja (linie 15-50)
+2. Klasa GuiLogHandler - obsługa logów w GUI (linie 55-70)
+3. Funkcje pomocnicze - konfiguracja, preprocessing (linie 75-180)
+4. Klasa główna PDFConverterApp (linie 185-1150)
+   4.1. Inicjalizacja i setup GUI (linie 185-280)
+   4.2. Motyw i kolory (linie 285-380)
+   4.3. Interface użytkownika (linie 385-580)
+   4.4. Obsługa plików i folderów (linie 585-680)
+   4.5. Konwersja i OCR (linie 685-920)
+   4.6. Podgląd PDF (linie 925-1020)
+   4.7. Dialogi i okna pomocnicze (linie 1025-1100)
+   4.8. Utility i czyszczenie (linie 1105-1150)
+5. Punkt wejścia aplikacji (linie 1155)
+
+FUNKCJE GŁÓWNE:
+- convert_pdf_to_docx(): Konwersja PDF do DOCX z OCR
+- preprocess_image(): Preprocessing obrazu dla OCR
+- load_config(): Ładowanie konfiguracji z YAML
+- setup_gui(): Budowanie interfejsu użytkownika
+- show_pdf_preview(): Podgląd zawartości PDF
+
+ZALEŻNOŚCI ZEWNĘTRZNE:
+- Tesseract OCR (opcjonalne, dla rozpoznawania tekstu)
+- Poppler (wymagane, dla konwersji PDF)
+- Python 3.9+ z bibliotekami: tkinter, PIL, PyMuPDF, pdfminer, python-docx
+"""
+
 # =============================================================================
-# Imports and Configuration
+# Importy i konfiguracja
 # =============================================================================
 import tkinter as tk
 from tkinter import ttk, scrolledtext, filedialog, Toplevel, messagebox
 import os
 import platform
+import subprocess
 import threading
 import logging
+import traceback
 from pdfminer.high_level import extract_text, extract_pages
 from PIL import Image, ImageTk
 import fitz
@@ -38,7 +69,7 @@ except ImportError:
     TESSERACT_AVAILABLE = False
     logging.warning("Pytesseract nie jest zainstalowany. Funkcje OCR będą niedostępne.")
     # raise  # USUNIĘTO raise, aplikacja działa bez OCR
-except Exception as e:
+except (OSError, ImportError, AttributeError, RuntimeError) as e:
     TESSERACT_AVAILABLE = False
     logging.error("Błąd podczas inicjalizacji Tesseract: %s", e)
     # raise  # USUNIĘTO raise, aplikacja działa bez OCR
@@ -103,7 +134,7 @@ def load_config():
         merged.update({k: v for k, v in cfg.items() if v is not None})
         merged['output_dir'] = os.path.expanduser(merged['output_dir'])
         return merged
-    except Exception as e:  # noqa: E722
+    except (OSError, IOError, yaml.YAMLError, KeyError, TypeError) as e:
         logging.warning("Nie udało się wczytać config.yaml: %s", e)
         return default
 
@@ -127,7 +158,7 @@ class PDFtoDocxConverterApp(tk.Tk):
             else:  # Linux i inne systemy Unix
                 desktop = os.path.expanduser("~/Desktop")
                 return desktop if os.path.exists(desktop) else os.path.expanduser("~")
-        except Exception:
+        except (OSError, IOError):
             return os.path.expanduser("~")
 
     def _bring_to_front_macos(self):
@@ -139,12 +170,11 @@ class PDFtoDocxConverterApp(tk.Tk):
         self.after(500, lambda: self.attributes('-topmost', False))
         # Dodatkowo wymuś aktywację przez AppleScript (jeśli dostępne)
         try:
-            import subprocess
             subprocess.Popen([
                 'osascript', '-e',
                 'tell application "System Events" to set frontmost of the first process whose unix id is (do shell script "echo $PPID") to true'
             ])
-        except Exception:
+        except (OSError, subprocess.SubprocessError):
             pass
 
     def __init__(self):
@@ -203,14 +233,14 @@ class PDFtoDocxConverterApp(tk.Tk):
                 style = ttk.Style(self)
                 style.theme_use('clam')  # 'clam' jest jasny i czytelny na macOS
                 logging.info("Ustawiono styl ttk: clam (diagnostyka)")
-            except Exception as e:
+            except (tk.TclError, AttributeError) as e:
                 logging.warning("Nie udało się wymusić stylu ttk na macOS: %s", e)
         self.configure(bg="#f8f8f8")  # Jasne tło dla głównego okna
         # --- Poprawka: zawsze ustaw output_dir ---
         try:
             self.selected_files = []
             self.output_dir = self.app_config.get('output_dir') or self.get_default_output_dir()
-        except Exception as e:
+        except (KeyError, TypeError, OSError) as e:
             logging.error("Błąd przy ustawianiu output_dir: %s", e)
             self.output_dir = self.get_default_output_dir()
         self.output_format = tk.StringVar(value="docx")
@@ -218,7 +248,7 @@ class PDFtoDocxConverterApp(tk.Tk):
         self.cancel_event = threading.Event()
         self.current_preview_image = None
         self.ocr_lang = self.app_config.get('ocr_lang', 'pol')
-        self.title("Zaawansowany Konwerter PDF v4.1.0 Enterprise Edition")
+        self.title("Zaawansowany Konwerter PDF v4.2.0 Enterprise Edition")
         self.geometry("1024x768")
         self.minsize(900, 600)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -265,7 +295,6 @@ class PDFtoDocxConverterApp(tk.Tk):
         """Wykrywa motyw systemowy (light/dark) na macOS i Windows. Domyślnie light."""
         try:
             if sys.platform == "darwin":
-                import subprocess
                 result = subprocess.run([
                     'defaults', 'read', '-g', 'AppleInterfaceStyle'
                 ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False)
@@ -279,7 +308,7 @@ class PDFtoDocxConverterApp(tk.Tk):
                         return "light" if apps_use_light == 1 else "dark"
                 except ImportError:
                     pass
-        except Exception:
+        except (OSError, subprocess.SubprocessError):
             pass
         return "light"
 
@@ -327,7 +356,7 @@ class PDFtoDocxConverterApp(tk.Tk):
     def show_about_dialog(self):
         """Wyświetla okno dialogowe 'O programie' oraz instrukcję i linki do Poppler/Tesseract."""
         about_win = Toplevel(self)
-        about_win.title("O programie - PDF Converter v4.1.0 Enterprise Edition")
+        about_win.title("O programie - PDF Converter v4.2.0 Enterprise Edition")
         dialog_width = 500
         dialog_height = 420  # zwiększona wysokość
         about_win.resizable(False, False)
@@ -343,7 +372,7 @@ class PDFtoDocxConverterApp(tk.Tk):
         main_frame = ttk.Frame(about_win, padding=15)
         main_frame.pack(expand=True, fill=tk.BOTH)
         ttk.Label(main_frame, text="Zaawansowany Konwerter PDF", font=("Helvetica", 14, "bold")).pack(pady=(0,10))
-        ttk.Label(main_frame, text="Wersja: 4.1.0 Enterprise Edition").pack(pady=3)
+        ttk.Label(main_frame, text="Wersja: 4.2.0 Enterprise Edition").pack(pady=3)
         ttk.Label(main_frame, text="Autor: Alan Steinbarth").pack(pady=3)
         ttk.Label(main_frame, text="Wykorzystuje biblioteki: pdf2docx, pdfminer.six, PyMuPDF, Pillow, (opcjonalnie) Pytesseract.").pack(pady=3)
         ttk.Label(main_frame, text="© 2025").pack(pady=3)
@@ -535,7 +564,7 @@ class PDFtoDocxConverterApp(tk.Tk):
                             page = doc[page_num]
                             try:
                                 pix = self._get_pixmap_compat(page, fitz.Matrix(3, 3))
-                            except Exception as e:  # noqa: E722
+                            except (OSError, IOError, ValueError, RuntimeError) as e:
                                 logging.error("Błąd generowania obrazu do OCR: %s", e)
                                 continue
                             img = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
@@ -554,7 +583,7 @@ class PDFtoDocxConverterApp(tk.Tk):
                         doc.close()
                         text_content = "\n\n--- Koniec strony ---\n\n".join(ocr_texts)
                         logging.info("OCR zakończony: %d/%d stron zawierało tekst.", ocr_pages_with_text, len(ocr_texts))
-                    except Exception as ocr_err:  # noqa: E722
+                    except (OSError, IOError, ValueError, RuntimeError) as ocr_err:
                         logging.error("Błąd OCR: %s. Nie udało się wyciągnąć tekstu z obrazu.", ocr_err)
                         text_content = ""
                 else:
@@ -572,7 +601,7 @@ class PDFtoDocxConverterApp(tk.Tk):
                             docx_doc.add_paragraph("")
                     # Usuń ostatni pusty akapit jeśli jest
                     if docx_doc.paragraphs and not docx_doc.paragraphs[-1].text.strip():
-                        p = docx_doc.paragraphs[-1]._element  # dostęp do chronionego _element jest typowy w python-docx
+                        p = docx_doc.paragraphs[-1]._element  # pylint: disable=protected-access
                         p.getparent().remove(p)
                     docx_doc.save(output_file_path)
                     logging.info("Pomyślnie zapisano '%s' jako '%s'.", base_name, output_file_name)
@@ -589,7 +618,7 @@ class PDFtoDocxConverterApp(tk.Tk):
                 else:
                     logging.warning("Nie udało się wyodrębnić tekstu z pliku '%s'. Plik TXT nie został utworzony.", base_name)
                     return False
-        except Exception as e:  # noqa: E722
+        except (OSError, IOError, ValueError, RuntimeError) as e:
             logging.error("Błąd podczas konwersji pliku '%s': %s", base_name, e)
             return False
 
@@ -605,7 +634,7 @@ class PDFtoDocxConverterApp(tk.Tk):
                 logging.info("Przetwarzanie pliku (%d/%d): %s", i+1, len(self.selected_files), os.path.basename(file_path))
                 try:
                     success = self._convert_single_file(file_path)
-                except Exception as file_exc:  # noqa: E722
+                except (OSError, IOError, ValueError, RuntimeError) as file_exc:
                     logging.error("Błąd krytyczny podczas konwersji pliku %s: %s", file_path, file_exc)
                     success = False
                 if success:
@@ -614,7 +643,7 @@ class PDFtoDocxConverterApp(tk.Tk):
                     logging.warning("Pominięto plik %s z powodu błędu.", os.path.basename(file_path))
                 current_progress = i + 1
                 self.after(0, lambda val=current_progress: self.progress_bar.config(value=val))
-        except Exception as e:  # noqa: E722
+        except (OSError, IOError, ValueError, RuntimeError, threading.ThreadError) as e:
             logging.error("Wystąpił krytyczny błąd w głównym wątku konwersji: %s", e)
         finally:
             self.after(0, self._finalize_conversion)
@@ -649,7 +678,7 @@ class PDFtoDocxConverterApp(tk.Tk):
             for _ in extract_pages(pdf_path):
                 count += 1
             return count
-        except Exception as e:  # noqa: E722
+        except (OSError, IOError, ValueError, RuntimeError) as e:
             logging.warning("Nie udało się pobrać liczby stron dla '%s': %s. Szczegóły w logach konsoli, jeśli dostępne.", os.path.basename(pdf_path), type(e).__name__)
             return None
 
@@ -753,7 +782,7 @@ class PDFtoDocxConverterApp(tk.Tk):
             mat = fitz.Matrix(scale, scale)
             try:
                 pix = self._get_pixmap_compat(page, mat)
-            except Exception as e:  # noqa: E722
+            except (OSError, IOError, ValueError, RuntimeError) as e:
                 logging.error("Błąd generowania podglądu PDF: %s", e)
                 doc.close()
                 return
@@ -763,7 +792,7 @@ class PDFtoDocxConverterApp(tk.Tk):
             self.preview_canvas.create_image(preview_width/2, preview_height/2, image=self.current_preview_image, anchor=tk.CENTER)
             pix = None
             doc.close()
-        except Exception as e:  # noqa: E722
+        except (OSError, IOError, ValueError, RuntimeError) as e:
             logging.error("Błąd podczas generowania podglądu PDF: %s", e)
             self._clear_pdf_preview()
 
@@ -1138,7 +1167,6 @@ class PDFtoDocxConverterApp(tk.Tk):
         self.update_theme()
 
 if __name__ == "__main__":
-    import traceback
     print("=== STARTING PDFtoDocxConverterApp ===")
     try:
         app = PDFtoDocxConverterApp()
@@ -1148,7 +1176,7 @@ if __name__ == "__main__":
         app.focus_force()
         app.geometry("1024x768+100+100")
         app.mainloop()
-    except Exception as e:
-        print("[FATAL ERROR] Aplikacja nie uruchomiła się! Szczegóły:")
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        print(f"[FATAL ERROR] Aplikacja nie uruchomiła się! Szczegóły: {e}")
         traceback.print_exc()
     print("=== KONIEC PROGRAMU ===")
