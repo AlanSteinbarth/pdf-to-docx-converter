@@ -1,10 +1,6 @@
 # Konwerter PDF -> DOCX/TXT z OCR
 
-- **ENTERPRISE FEATURES**: zaawansowane logowanie do pliku z rotacją
-- **ENTERPRISE FEATURES**: konfiguracja przez plik config.yaml
-- **ENTERPRISE FEATURES**: automatyczne testy jednostkowe (pytest)
-- **ENTERPRISE FEATURES**: gotowy workflow CI/CD (GitHub Actions)
-- Wszystkie funkcje z wersji 4.0.0: automatyczny OCR, stabilny interfejs, wieloplatformowośćnsowany, wieloplatformowy konwerter PDF na DOCX/TXT z automatycznym rozpoznawaniem tekstu (OCR) dla skanów i zdjęć. Nowoczesny, stabilny interfejs, wsparcie dla macOS, Windows, Linux.
+Zaawansowany, wieloplatformowy konwerter PDF na DOCX/TXT z automatycznym rozpoznawaniem tekstu (OCR) dla skanów i zdjęć. Nowoczesny, stabilny interfejs, wsparcie dla macOS, Windows, Linux.
 
 ## Najważniejsze funkcje
 - Automatyczne rozpoznawanie tekstu (OCR) dla PDF-ów bez warstwy tekstowej (skany, zdjęcia)
@@ -38,12 +34,12 @@
 python3 app.py
 ```
 
-## Nowości w wersji 4.1.0 (31.05.2025)
-- Automatyczny, skuteczny OCR dla skanów i zdjęć (język polski)
-- Lepsza jakość rozpoznawania tekstu (DPI x3, wyostrzanie, binarizacja)
-- Stabilny, nowoczesny interfejs
-- Usunięto drag & drop (pełna stabilność)
-- Poprawiona dokumentacja
+## Nowości w wersji 4.1.0 (18.06.2025)
+- **ENTERPRISE FEATURES**: zaawansowane logowanie do pliku z rotacją
+- **ENTERPRISE FEATURES**: konfiguracja przez plik config.yaml
+- **ENTERPRISE FEATURES**: automatyczne testy jednostkowe (pytest)
+- **ENTERPRISE FEATURES**: gotowy workflow CI/CD (GitHub Actions)
+- Wszystkie funkcje z wersji 4.0.0: automatyczny OCR, stabilny interfejs, wieloplatformowość
 
 ## ENTERPRISE FEATURES
 
@@ -70,6 +66,14 @@ Edytuj plik `config.yaml`, aby zmienić domyślne ustawienia aplikacji (np. kata
 ### Logowanie
 
 Wszystkie logi audytowe zapisywane są do pliku `logs/app.log` z automatyczną rotacją (5 plików po 2MB).
+
+## Status projektu
+
+🎯 **Wersja**: 4.1.0 Enterprise Edition  
+📅 **Ostatnia aktualizacja**: 18 czerwca 2025  
+✅ **Status**: Stabilny, gotowy do użycia produkcyjnego  
+🔧 **Testy**: Automatyczne CI/CD z GitHub Actions  
+📊 **Kompatybilność**: macOS, Windows, Linux  
 
 ## Licencja
 MIT
