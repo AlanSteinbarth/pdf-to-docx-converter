@@ -1,5 +1,22 @@
 # Historia zmian
 
+## [4.2.0] - 2025-06-19
+### Dodano
+- Nowoczesny design w stylu macOS z obsługą motywu dzień/noc
+- Wysoki kontrast i czytelność dla lepszej dostępności
+- Jednolity styl przycisków i elementów UI
+- Stabilność uruchamiania na różnych systemach operacyjnych
+- Dokumentacja kodu z spisem treści i opisami funkcji
+- Przygotowanie do produkcji i publikacji
+- **Zrzuty ekranu** w folderze `screenshots/` z wizualizacją interfejsu
+- Kompletna dokumentacja z przykładami użycia
+
+### Zmieniono
+- Ulepszony wygląd interfejsu użytkownika
+- Poprawiona kompatybilność z różnymi systemami operacyjnymi
+- Zaktualizowana dokumentacja i struktura projektu
+- Dodane zrzuty ekranu w README.md dla lepszej prezentacji
+
 ## [4.1.0] - 2025-06-18
 ### Dodano
 - ENTERPRISE: logowanie do pliku z rotacją (logs/app.log)

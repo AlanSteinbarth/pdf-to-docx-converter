@@ -11,6 +11,28 @@ Zaawansowany, wieloplatformowy konwerter PDF na DOCX/TXT z automatycznym rozpozn
 - Pasek postępu, logi, anulowanie konwersji, wsparcie dla wielu plików
 - Obsługa macOS, Windows, Linux
 
+## Zrzuty ekranu
+
+### Główny interfejs aplikacji
+Nowoczesny, czytelny interfejs z panelem wyboru plików, opcjami konwersji i podglądem logów.
+
+![Główny interfejs - motyw jasny](screenshots/Zrzut%20ekranu%202025-06-19%20o%2000.07.16.png)
+
+### Motyw ciemny
+Przełączanie między motywem jasnym a ciemnym dla komfortu pracy w różnych warunkach oświetleniowych.
+
+![Interfejs - motyw ciemny](screenshots/Zrzut%20ekranu%202025-06-19%20o%2000.09.08.png)
+
+### Proces konwersji w toku
+Pasek postępu i szczegółowe logi w czasie rzeczywistym pokazują postęp konwersji z rozpoznawaniem OCR.
+
+![Proces konwersji](screenshots/Zrzut%20ekranu%202025-06-19%20o%2000.10.01.png)
+
+### Zakończona konwersja z logami
+Kompletne informacje o zakończonej konwersji z podsumowaniem przetworzonych plików.
+
+![Zakończona konwersja](screenshots/Zrzut%20ekranu%202025-06-19%20o%2000.10.45.png)
+
 ## Instalacja
 1. Zainstaluj wymagane biblioteki:
    ```bash
@@ -34,12 +56,12 @@ Zaawansowany, wieloplatformowy konwerter PDF na DOCX/TXT z automatycznym rozpozn
 python3 app.py
 ```
 
-## Nowości w wersji 4.1.0 (18.06.2025)
-- **ENTERPRISE FEATURES**: zaawansowane logowanie do pliku z rotacją
-- **ENTERPRISE FEATURES**: konfiguracja przez plik config.yaml
-- **ENTERPRISE FEATURES**: automatyczne testy jednostkowe (pytest)
-- **ENTERPRISE FEATURES**: gotowy workflow CI/CD (GitHub Actions)
-- Wszystkie funkcje z wersji 4.0.0: automatyczny OCR, stabilny interfejs, wieloplatformowość
+## Nowości w wersji 4.2.0 (19.06.2025)
+- **NOWY DESIGN**: nowoczesny interfejs w stylu macOS z obsługą motywu dzień/noc
+- **DOSTĘPNOŚĆ**: wysoki kontrast i czytelność dla lepszej użyteczności
+- **STABILNOŚĆ**: pełna kompatybilność z macOS, Windows i Linux
+- **PRODUKCJA**: gotowość do publikacji z pełną dokumentacją
+- Wszystkie funkcje z wersji 4.1.0: zaawansowane logowanie, konfiguracja, testy CI/CD
 
 ## ENTERPRISE FEATURES
 
@@ -69,8 +91,8 @@ Wszystkie logi audytowe zapisywane są do pliku `logs/app.log` z automatyczną r
 
 ## Status projektu
 
-🎯 **Wersja**: 4.1.0 Enterprise Edition  
-📅 **Ostatnia aktualizacja**: 18 czerwca 2025  
+🎯 **Wersja**: 4.2.0 Enterprise Edition  
+📅 **Ostatnia aktualizacja**: 19 czerwca 2025  
 ✅ **Status**: Stabilny, gotowy do użycia produkcyjnego  
 🔧 **Testy**: Automatyczne CI/CD z GitHub Actions  
 📊 **Kompatybilność**: macOS, Windows, Linux  
