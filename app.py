@@ -141,7 +141,7 @@ class PDFtoDocxConverterApp(tk.Tk):
         # Ustaw poziom logowania z config.yaml
         logging.getLogger().setLevel(self.app_config.get('log_level', 'INFO'))
         super().__init__()
-        self.title("Zaawansowany Konwerter PDF v4.0")
+        self.title("Zaawansowany Konwerter PDF v4.1.0 Enterprise Edition")
         self.geometry("1024x768")
         self.minsize(900, 600)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -229,7 +229,7 @@ class PDFtoDocxConverterApp(tk.Tk):
     def show_about_dialog(self):
         """Wyświetla okno dialogowe 'O programie' oraz instrukcję i linki do Poppler/Tesseract."""
         about_win = Toplevel(self)
-        about_win.title("O programie Konwerter PDF")
+        about_win.title("O programie - PDF Converter v4.1.0 Enterprise Edition")
         dialog_width = 500
         dialog_height = 420  # zwiększona wysokość
         about_win.resizable(False, False)
@@ -248,7 +248,7 @@ class PDFtoDocxConverterApp(tk.Tk):
         ttk.Label(main_frame, text="Wersja: 4.1.0 Enterprise Edition").pack(pady=3)
         ttk.Label(main_frame, text="Autor: Alan Steinbarth").pack(pady=3)
         ttk.Label(main_frame, text="Wykorzystuje biblioteki: pdf2docx, pdfminer.six, PyMuPDF, Pillow, (opcjonalnie) Pytesseract.").pack(pady=3)
-        ttk.Label(main_frame, text="© 2024-2025").pack(pady=3)
+        ttk.Label(main_frame, text="© 2025").pack(pady=3)
         # Instrukcja i linki
         help_textbox = scrolledtext.ScrolledText(main_frame, height=12, wrap=tk.WORD, state=tk.NORMAL)
         help_textbox.insert(tk.END, self.help_text)
@@ -783,7 +783,7 @@ class PDFtoDocxConverterApp(tk.Tk):
         self.preview_canvas.grid(row=0, column=0, sticky="nsew", padx=10, pady=(0, 5))
 
         # --- Stopka z informacją o autorze ---
-        self.footer_label = ttk.Label(self, text="Autor: Alan Steinbarth | © 2024-2025", anchor=tk.CENTER, font=("Arial", 10, "italic"))
+        self.footer_label = ttk.Label(self, text="Autor: Alan Steinbarth | © 2025", anchor=tk.CENTER, font=("Arial", 10, "italic"))
         self.footer_label.pack(side=tk.BOTTOM, fill=tk.X, pady=(2, 2))
 
     # Usunięto metodę _on_drop_files oraz wszelkie odniesienia do DnD
