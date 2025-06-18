@@ -1,8 +1,15 @@
 # Zrzuty ekranu aplikacji PDF to DOCX Converter v4.2.0
 
-Ten folder zawiera zrzuty ekranu przedstawiające interfejs i funkcjonalność aplikacji.
+Ten folder zawiera zrzuty ekranu i grafikę promocyjną przedstawiające interfejs i funkcjonalność aplikacji.
 
 ## Pliki
+
+### `cover.png`
+**Okładka aplikacji**
+- Profesjonalna grafika promocyjna używana jako hero image
+- Nowoczesny design w stylu Apple MacBook Pro
+- Przezroczyste tło, optymalizowane do 1200x630px
+- Używane na początku README.md i w dokumentacji portfolio
 
 ### `Zrzut ekranu 2025-06-19 o 00.07.16.png`
 **Główny interfejs - motyw jasny**

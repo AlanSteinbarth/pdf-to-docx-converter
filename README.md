@@ -1,3 +1,5 @@
+![PDF to DOCX Converter - Okładka](screenshots/cover.png)
+
 # Konwerter PDF -> DOCX/TXT z OCR
 
 Zaawansowany, wieloplatformowy konwerter PDF na DOCX/TXT z automatycznym rozpoznawaniem tekstu (OCR) dla skanów i zdjęć. Nowoczesny, stabilny interfejs, wsparcie dla macOS, Windows, Linux.

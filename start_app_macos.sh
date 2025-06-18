@@ -1,8 +1,8 @@
 #!/bin/zsh
-# Skrypt uruchamiający PDF to DOCX Converter v4.1.0 Enterprise Edition na macOS
+# Skrypt uruchamiający PDF to DOCX Converter v4.2.0 Enterprise Edition na macOS
 # Omija problemy z conda i uruchamia aplikację z systemowym Python
 
-echo "🚀 PDF to DOCX Converter v4.1.0 Enterprise Edition - uruchamianie..."
+echo "🚀 PDF to DOCX Converter v4.2.0 Enterprise Edition - uruchamianie..."
 
 # Ustawienie flagi dla Tkinter na macOS, aby uniknąć ostrzeżeń o deprekacji
 export TK_SILENCE_DEPRECATION=1

@@ -9,6 +9,7 @@
 - Dokumentacja kodu z spisem treści i opisami funkcji
 - Przygotowanie do produkcji i publikacji
 - **Zrzuty ekranu** w folderze `screenshots/` z wizualizacją interfejsu
+- **Profesjonalna okładka** `cover.png` - hero image w stylu Apple MacBook Pro
 - Kompletna dokumentacja z przykładami użycia
 
 ### Zmieniono
