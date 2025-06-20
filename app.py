@@ -36,20 +36,21 @@ ZALEŻNOŚCI ZEWNĘTRZNE:
 # =============================================================================
 # Importy i konfiguracja
 # =============================================================================
-import tkinter as tk
-from tkinter import ttk, scrolledtext, filedialog, Toplevel, messagebox
+import logging
+import logging.handlers
 import os
 import platform
 import subprocess
-import threading
-import logging
-import traceback
-from pdfminer.high_level import extract_text, extract_pages
-from PIL import Image, ImageTk
-import fitz
-import logging.handlers
-import yaml
 import sys
+import threading
+import tkinter as tk
+from tkinter import ttk, scrolledtext, filedialog, Toplevel, messagebox
+import traceback
+
+import fitz
+from PIL import Image, ImageTk
+from pdfminer.high_level import extract_text, extract_pages
+import yaml
 
 try:
     import pytesseract as pt_module
@@ -79,6 +80,8 @@ if platform.system() == "Darwin":
     os.environ['TK_SILENCE_DEPRECATION'] = '1'
 
 class GuiLogHandler(logging.Handler):
+    """Custom logging handler that displays log messages in GUI text widget."""
+    
     def __init__(self, text_widget):
         super().__init__()
         self.text_widget = text_widget
@@ -116,6 +119,7 @@ logging.getLogger().addHandler(file_handler)
 
 # --- Enterprise: ładowanie konfiguracji z config.yaml ---
 def load_config():
+    """Load configuration from config.yaml file with default fallbacks."""
     # Szukaj config.yaml w bieżącym katalogu roboczym (dla testów i uruchomień enterprise)
     config_path = os.path.join(os.getcwd(), 'config.yaml')
     default = {
@@ -139,6 +143,17 @@ def load_config():
         return default
 
 class PDFtoDocxConverterApp(tk.Tk):
+    """
+    Main application class for PDF to DOCX/TXT converter with OCR support.
+    
+    Features:
+    - GUI interface with dark/light theme support
+    - PDF to DOCX/TXT conversion
+    - OCR text recognition for scanned documents
+    - Batch processing support
+    - Progress tracking and logging
+    """
+    
     def get_default_output_dir(self):
         """Określa domyślny folder wyjściowy w zależności od systemu operacyjnego"""
         system = platform.system()
@@ -148,16 +163,15 @@ class PDFtoDocxConverterApp(tk.Tk):
                 local_desktop = os.path.expanduser("~/Desktop")
                 if os.path.exists(onedrive_desktop):
                     return onedrive_desktop
-                elif os.path.exists(local_desktop):
+                if os.path.exists(local_desktop):
                     return local_desktop
-                else:
-                    return os.path.expanduser("~")
-            elif system == "Darwin":  # macOS
+                return os.path.expanduser("~")
+            if system == "Darwin":  # macOS
                 desktop = os.path.expanduser("~/Desktop")
                 return desktop if os.path.exists(desktop) else os.path.expanduser("~")
-            else:  # Linux i inne systemy Unix
-                desktop = os.path.expanduser("~/Desktop")
-                return desktop if os.path.exists(desktop) else os.path.expanduser("~")
+            # Linux i inne systemy Unix
+            desktop = os.path.expanduser("~/Desktop")
+            return desktop if os.path.exists(desktop) else os.path.expanduser("~")
         except (OSError, IOError):
             return os.path.expanduser("~")
 
@@ -297,13 +311,16 @@ class PDFtoDocxConverterApp(tk.Tk):
             if sys.platform == "darwin":
                 result = subprocess.run([
                     'defaults', 'read', '-g', 'AppleInterfaceStyle'
-                ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False)
+                ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, 
+                text=True, check=False)
                 if 'Dark' in result.stdout:
                     return "dark"
             elif sys.platform.startswith("win"):
                 try:
                     import winreg
-                    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize") as key:
+                    reg_path = (r"Software\\Microsoft\\Windows\\CurrentVersion\\"
+                               r"Themes\\Personalize")
+                    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, reg_path) as key:
                         apps_use_light = winreg.QueryValueEx(key, "AppsUseLightTheme")[0]
                         return "light" if apps_use_light == 1 else "dark"
                 except ImportError:
@@ -323,8 +340,8 @@ class PDFtoDocxConverterApp(tk.Tk):
         if not hasattr(self, 'log_text_widget'):
             c = self.theme_colors[self.theme_mode]
             self.log_text_widget = scrolledtext.ScrolledText(
-                self, 
-                height=8, 
+                self,
+                height=8,
                 state=tk.DISABLED,
                 bg=c["listbox"],
                 fg=c["label"],
@@ -332,7 +349,9 @@ class PDFtoDocxConverterApp(tk.Tk):
                 selectbackground=c["accent"],
                 selectforeground="white"
             )
-            self.log_text_widget.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=(0, 5))
+            self.log_text_widget.pack(
+                side=tk.BOTTOM, fill=tk.X, padx=10, pady=(0, 5)
+            )
         gui_handler = GuiLogHandler(self.log_text_widget)
         logger.addHandler(gui_handler)
 
@@ -354,6 +373,7 @@ class PDFtoDocxConverterApp(tk.Tk):
         self.config(menu=self.menubar)
 
     def show_about_dialog(self):
+        """Display about dialog with application information."""
         """Wyświetla okno dialogowe 'O programie' oraz instrukcję i linki do Poppler/Tesseract."""
         about_win = Toplevel(self)
         about_win.title("O programie - PDF Converter v4.2.0 Enterprise Edition")
@@ -395,10 +415,10 @@ class PDFtoDocxConverterApp(tk.Tk):
             width = int(self.geometry().split('x')[0].split('+')[0]) # Próba odczydu z geometrii
         if height <= 1:
             height = int(self.geometry().split('x')[1].split('+')[0]) # Próba odczydu z geometrii
-        
+
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-        
+
         pos_x = (screen_width // 2) - (width // 2)
         pos_y = (screen_height // 2) - (height // 2)
         self.geometry(f"{width}x{height}+{pos_x}+{pos_y}")
@@ -418,7 +438,7 @@ class PDFtoDocxConverterApp(tk.Tk):
     def select_files(self):
         """Otwiera okno dialogowe do wyboru plików PDF i aktualizuje listę."""
         initial_dir = self.output_dir if os.path.isdir(self.output_dir) else os.path.expanduser("~")
-        
+
         new_files = filedialog.askopenfilenames(
             title="Wybierz pliki PDF",
             initialdir=initial_dir,
@@ -444,7 +464,7 @@ class PDFtoDocxConverterApp(tk.Tk):
         """Otwiera okno dialogowe do wyboru folderu i dodaje pliki PDF."""
         initial_dir = self.output_dir if os.path.isdir(self.output_dir) else os.path.expanduser("~")
         folder_path = filedialog.askdirectory(title="Wybierz folder z plikami PDF", initialdir=initial_dir)
-        
+
         if folder_path:
             found_files = []
             for root, _, files in os.walk(folder_path):
@@ -453,7 +473,7 @@ class PDFtoDocxConverterApp(tk.Tk):
                         full_path = os.path.join(root, file)
                         if full_path not in self.selected_files and full_path not in found_files:
                             found_files.append(full_path)
-            
+
             if found_files:
                 self.selected_files.extend(found_files)
                 self.update_files_listbox()
@@ -474,7 +494,7 @@ class PDFtoDocxConverterApp(tk.Tk):
         # Usuwamy od końca, aby uniknąć problemów z indeksami
         for index in reversed(selected_indices):
             del self.selected_files[index]
-        
+
         self.update_files_listbox()
         logging.info("Usunięto %d plików z listy.", len(selected_indices))
         if self.selected_files and not self.files_listbox.curselection():
@@ -486,7 +506,7 @@ class PDFtoDocxConverterApp(tk.Tk):
         if not self.selected_files:
             logging.info("Lista plików jest już pusta.")
             return
-        
+
         self.selected_files.clear()
         self.update_files_listbox()
         logging.info("Wyczyszczono listę plików.")
@@ -533,7 +553,7 @@ class PDFtoDocxConverterApp(tk.Tk):
         self._toggle_controls_state(tk.DISABLED)
         self.convert_button.config(state=tk.DISABLED)
         self.cancel_button.config(state=tk.NORMAL)
-        
+
         self.cancel_event.clear()
         self.progress_bar["value"] = 0
         self.progress_bar["maximum"] = len(self.selected_files)
@@ -606,18 +626,18 @@ class PDFtoDocxConverterApp(tk.Tk):
                     docx_doc.save(output_file_path)
                     logging.info("Pomyślnie zapisano '%s' jako '%s'.", base_name, output_file_name)
                     return True
-                else:
-                    logging.warning("Nie udało się wyodrębnić tekstu z pliku '%s'. Plik DOCX nie został utworzony.", base_name)
-                    return False
-            elif output_format_val == "txt":
+                
+                logging.warning("Nie udało się wyodrębnić tekstu z pliku '%s'. Plik DOCX nie został utworzony.", base_name)
+                return False
+            if output_format_val == "txt":
                 if text_content.strip():
                     with open(output_file_path, "w", encoding="utf-8") as f:
                         f.write(text_content)
                     logging.info("Pomyślnie zapisano '%s' jako '%s'.", base_name, output_file_name)
                     return True
-                else:
-                    logging.warning("Nie udało się wyodrębnić tekstu z pliku '%s'. Plik TXT nie został utworzony.", base_name)
-                    return False
+                
+                logging.warning("Nie udało się wyodrębnić tekstu z pliku '%s'. Plik TXT nie został utworzony.", base_name)
+                return False
         except (OSError, IOError, ValueError, RuntimeError) as e:
             logging.error("Błąd podczas konwersji pliku '%s': %s", base_name, e)
             return False
@@ -704,9 +724,9 @@ class PDFtoDocxConverterApp(tk.Tk):
 
     def _display_file_info(self, file_path):
         """Wyświetla informacje o podanym pliku PDF."""
-        if not hasattr(self, 'info_file_name_var'): 
-            return 
-        
+        if not hasattr(self, 'info_file_name_var'):
+            return
+
         if not os.path.exists(file_path):
             self._clear_file_info_display()
             logging.warning("Plik nie istnieje w _display_file_info: %s", file_path)
@@ -714,7 +734,7 @@ class PDFtoDocxConverterApp(tk.Tk):
 
         file_name = os.path.basename(file_path)
         size_str = "N/A" # Inicjalizacja
-        
+
         try:
             file_size_bytes = os.path.getsize(file_path)
             if file_size_bytes < 1024:
@@ -752,10 +772,10 @@ class PDFtoDocxConverterApp(tk.Tk):
         """Zwraca pixmapę strony PDF, obsługując różne wersje PyMuPDF."""
         if hasattr(page, 'get_pixmap'):
             return page.get_pixmap(matrix=matrix)
-        elif hasattr(page, 'getPixmap'):
+        if hasattr(page, 'getPixmap'):
             return page.getPixmap(matrix=matrix)
-        else:
-            raise RuntimeError("Brak kompatybilnej metody get_pixmap/getPixmap w obiekcie Page.")
+        
+        raise RuntimeError("Brak kompatybilnej metody get_pixmap/getPixmap w obiekcie Page.")
 
     def _preview_pdf_page(self, pdf_path, page_num=0):
         if not hasattr(self, 'preview_canvas'):
@@ -797,16 +817,17 @@ class PDFtoDocxConverterApp(tk.Tk):
             self._clear_pdf_preview()
 
     def add_theme_switcher(self):
+        """Add theme switcher button to the main window."""
         # Przycisk przełączania motywu w górnej części okna - nowoczesny design
         c = self.theme_colors[self.theme_mode]
         self.theme_switch_btn = tk.Button(
-            self, 
-            text="🌙" if self.theme_mode == "light" else "☀️", 
-            command=self.toggle_theme, 
-            bg=c["button_secondary"], 
-            fg=c["button_secondary_text"], 
-            relief=tk.FLAT, 
-            font=("Helvetica", 14, "bold"), 
+            self,
+            text="🌙" if self.theme_mode == "light" else "☀️",
+            command=self.toggle_theme,
+            bg=c["button_secondary"],
+            fg=c["button_secondary_text"],
+            relief=tk.FLAT,
+            font=("Helvetica", 14, "bold"),
             bd=1,
             highlightthickness=1,
             highlightbackground=c["border"],
@@ -818,42 +839,44 @@ class PDFtoDocxConverterApp(tk.Tk):
         self.theme_switch_btn.place(x=10, y=10, width=40, height=32)
 
     def toggle_theme(self):
+        """Toggle between light and dark theme."""
         self.theme_mode = "dark" if self.theme_mode == "light" else "light"
         self.update_theme()
 
     def update_theme(self):
+        """Update all UI elements with current theme colors."""
         c = self.theme_colors[self.theme_mode]
-        
+
         # Tło główne
         self.configure(bg=c["bg"])
         self.main_frame.configure(bg=c["bg"])
-        
+
         # Panele
         self.left_panel_frame.configure(bg=c["panel"], highlightbackground=c["border"], highlightthickness=1)
         self.right_panel_frame.configure(bg=c["panel"], highlightbackground=c["border"], highlightthickness=1)
-        
+
         # Lista plików z lepszym kontrastem
         self.files_listbox.configure(
-            bg=c["listbox"], 
-            fg=c["label"], 
-            selectbackground=c["accent"], 
+            bg=c["listbox"],
+            fg=c["label"],
+            selectbackground=c["accent"],
             selectforeground="white",
             highlightbackground=c["border"],
             highlightcolor=c["accent"]
         )
         self.files_listbox_frame.configure(bg=c["panel"])
         self.file_buttons_frame.configure(bg=c["panel"])
-        
+
         # Ramka informacji o pliku
         self.file_info_frame.configure(bg=c["listbox"], fg=c["label"])
-        
+
         # Ustawienia wyjściowe
         self.output_settings_frame.configure(bg=c["panel"])
         self.output_dir_label.configure(bg=c["panel"], fg=c["label"], font=("Helvetica", 11, "bold"))
         self.output_dir_entry_frame.configure(bg=c["panel"])
         self.output_dir_entry.configure(
-            bg=c["entry"], 
-            fg=c["label"], 
+            bg=c["entry"],
+            fg=c["label"],
             highlightbackground=c["entry_border"],
             highlightcolor=c["accent"],
             insertbackground=c["label"],
@@ -861,45 +884,45 @@ class PDFtoDocxConverterApp(tk.Tk):
             disabledbackground=c["entry"],
             disabledforeground=c["label"]
         )
-        
+
         # Przycisk zmiany folderu - styl secondary
         self.select_output_dir_button.configure(
-            bg=c["button_secondary"], 
-            fg=c["button_secondary_text"], 
+            bg=c["button_secondary"],
+            fg=c["button_secondary_text"],
             activebackground=c["button_secondary_active"],
             font=("Helvetica", 10, "bold"),
             relief=tk.FLAT,
             bd=1,
             highlightbackground=c["border"]
         )
-        
+
         # Ramka formatów
         self.format_frame.configure(bg=c["listbox"], fg=c["label"])
         self.docx_radio.configure(
-            bg=c["listbox"], 
-            fg=c["label"], 
+            bg=c["listbox"],
+            fg=c["label"],
             selectcolor=c["accent"],
             activebackground=c["listbox"],
             font=("Helvetica", 11)
         )
         self.txt_radio.configure(
-            bg=c["listbox"], 
-            fg=c["label"], 
+            bg=c["listbox"],
+            fg=c["label"],
             selectcolor=c["accent"],
             activebackground=c["listbox"],
             font=("Helvetica", 11)
         )
-        
+
         # Pasek postępu
         self.progress_bar.configure(style="Custom.Horizontal.TProgressbar")
-        
+
         # Ramka przycisków akcji
         self.action_buttons_frame.configure(bg=c["panel"])
-        
+
         # Przycisk konwertuj - jednolity styl jak wszystkie inne przyciski
         self.convert_button.configure(
-            bg=c["button_secondary"], 
-            fg=c["button_secondary_text"], 
+            bg=c["button_secondary"],
+            fg=c["button_secondary_text"],
             activebackground=c["button_secondary_active"],
             font=("Helvetica", 11, "bold"),
             relief=tk.FLAT,
@@ -907,10 +930,10 @@ class PDFtoDocxConverterApp(tk.Tk):
             highlightthickness=1,
             highlightbackground=c["border"]
         )
-        
+
         # Przycisk anuluj - jednolity styl ale z wyraźniejszym kontrastem
         self.cancel_button.configure(
-            bg=c["button_secondary"], 
+            bg=c["button_secondary"],
             fg=c["label"],  # Zmieniono na label zamiast button_secondary_text dla lepszego kontrastu
             activebackground=c["button_secondary_active"],
             activeforeground=c["label"],
@@ -920,24 +943,24 @@ class PDFtoDocxConverterApp(tk.Tk):
             highlightthickness=1,
             highlightbackground=c["border"]
         )
-        
+
         # Przycisk pomocy - styl secondary
         self.help_button.configure(
-            bg=c["button_secondary"], 
-            fg=c["button_secondary_text"], 
+            bg=c["button_secondary"],
+            fg=c["button_secondary_text"],
             activebackground=c["button_secondary_active"],
             font=("Helvetica", 11, "bold"),
             relief=tk.FLAT,
             bd=1,
             highlightbackground=c["border"]
         )
-        
+
         # Stopka
         self.footer_label.configure(bg=c["footer"], fg=c["footer_fg"])
-        
+
         # Canvas podglądu
         self.preview_canvas.configure(bg=c["listbox"], highlightbackground=c["border"], highlightthickness=1)
-        
+
         # Widget logów - aktualizacja kolorów
         if hasattr(self, 'log_text_widget'):
             self.log_text_widget.configure(
@@ -947,51 +970,52 @@ class PDFtoDocxConverterApp(tk.Tk):
                 selectbackground=c["accent"],
                 selectforeground="white"
             )
-        
+
         # Aktualizuj wszystkie przyciski zarządzania plikami
         for btn in [self.select_files_button, self.add_folder_button, self.remove_button, self.clear_list_button]:
             btn.configure(
-                bg=c["button_secondary"], 
-                fg=c["button_secondary_text"], 
+                bg=c["button_secondary"],
+                fg=c["button_secondary_text"],
                 activebackground=c["button_secondary_active"],
                 font=("Helvetica", 10, "bold"),
                 relief=tk.FLAT,
                 bd=1,
                 highlightbackground=c["border"]
             )
-        
+
         # Etykiety w ramkach
         for widget in self.file_info_frame.winfo_children():
             if isinstance(widget, tk.Label):
                 widget.configure(bg=c["listbox"], fg=c["label"], font=("Helvetica", 10))
-        
+
         # Przełącznik motywu
         if self.theme_switch_btn is not None:
             self.theme_switch_btn.configure(
-                bg=c["button_secondary"], 
-                fg=c["button_secondary_text"], 
+                bg=c["button_secondary"],
+                fg=c["button_secondary_text"],
                 activebackground=c["button_secondary_active"],
                 highlightbackground=c["border"]
             )
             self.theme_switch_btn.config(text="☀️" if self.theme_mode == "dark" else "🌙")
-        
+
         # Style ttk
         style = ttk.Style()
         style.theme_use('clam')
         style.configure(
-            "Custom.Horizontal.TProgressbar", 
-            background=c["progress"], 
-            troughcolor=c["progress_trough"], 
-            bordercolor=c["border"], 
-            lightcolor=c["progress"], 
+            "Custom.Horizontal.TProgressbar",
+            background=c["progress"],
+            troughcolor=c["progress_trough"],
+            bordercolor=c["border"],
+            lightcolor=c["progress"],
             darkcolor=c["progress"],
             borderwidth=1
-        ) 
-        
+        )
+
         # Odświeżenie całego okna
         self.update_idletasks()
 
     def create_widgets(self):
+        """Create and arrange all GUI widgets."""
         # Główny kontener (wszystko poza stopką)
         self.configure(bg=self.theme_colors[self.theme_mode]["bg"])
         self.main_frame = tk.Frame(self, bg=self.theme_colors[self.theme_mode]["bg"])
@@ -1029,12 +1053,12 @@ class PDFtoDocxConverterApp(tk.Tk):
         self.file_buttons_frame = tk.Frame(self.left_panel_frame, bg=self.theme_colors[self.theme_mode]["panel"])
         self.file_buttons_frame.grid(row=2, column=0, sticky="ew", pady=(2, 0))
         btn_style = {
-            "bg": self.theme_colors[self.theme_mode]["button_secondary"], 
-            "fg": self.theme_colors[self.theme_mode]["button_secondary_text"], 
-            "activebackground": self.theme_colors[self.theme_mode]["button_secondary_active"], 
-            "relief": tk.FLAT, 
-            "font": ("Helvetica", 10, "bold"), 
-            "bd": 1, 
+            "bg": self.theme_colors[self.theme_mode]["button_secondary"],
+            "fg": self.theme_colors[self.theme_mode]["button_secondary_text"],
+            "activebackground": self.theme_colors[self.theme_mode]["button_secondary_active"],
+            "relief": tk.FLAT,
+            "font": ("Helvetica", 10, "bold"),
+            "bd": 1,
             "highlightthickness": 1,
             "highlightbackground": self.theme_colors[self.theme_mode]["border"]
         }
@@ -1072,11 +1096,11 @@ class PDFtoDocxConverterApp(tk.Tk):
         self.output_dir_entry_frame = tk.Frame(self.output_settings_frame, bg=self.theme_colors[self.theme_mode]["panel"])
         self.output_dir_entry_frame.pack(fill=tk.X)
         self.output_dir_entry = tk.Entry(
-            self.output_dir_entry_frame, 
-            state="readonly", 
-            bg=self.theme_colors[self.theme_mode]["entry"], 
-            fg=self.theme_colors[self.theme_mode]["label"], 
-            relief=tk.FLAT, 
+            self.output_dir_entry_frame,
+            state="readonly",
+            bg=self.theme_colors[self.theme_mode]["entry"],
+            fg=self.theme_colors[self.theme_mode]["label"],
+            relief=tk.FLAT,
             font=("Helvetica", 10),
             readonlybackground=self.theme_colors[self.theme_mode]["entry"],
             disabledbackground=self.theme_colors[self.theme_mode]["entry"],
@@ -1103,38 +1127,38 @@ class PDFtoDocxConverterApp(tk.Tk):
         # Przyciski akcji na dole lewego panelu - nowoczesny styl
         self.action_buttons_frame = tk.Frame(self.left_panel_frame, bg=self.theme_colors[self.theme_mode]["panel"])
         self.action_buttons_frame.grid(row=6, column=0, sticky="ew", pady=(5,0))
-        
+
         # Przycisk konwertuj - główny przycisk (primary) - jednolity styl jak inne przyciski
         self.convert_button = tk.Button(
-            self.action_buttons_frame, 
-            text="Konwertuj", 
-            command=self.start_conversion, 
+            self.action_buttons_frame,
+            text="Konwertuj",
+            command=self.start_conversion,
             width=12,
-            bg=self.theme_colors[self.theme_mode]["button_secondary"], 
-            fg=self.theme_colors[self.theme_mode]["button_secondary_text"], 
-            activebackground=self.theme_colors[self.theme_mode]["button_secondary_active"], 
-            relief=tk.FLAT, 
-            font=("Helvetica", 11, "bold"), 
-            bd=1, 
+            bg=self.theme_colors[self.theme_mode]["button_secondary"],
+            fg=self.theme_colors[self.theme_mode]["button_secondary_text"],
+            activebackground=self.theme_colors[self.theme_mode]["button_secondary_active"],
+            relief=tk.FLAT,
+            font=("Helvetica", 11, "bold"),
+            bd=1,
             highlightthickness=1,
             highlightbackground=self.theme_colors[self.theme_mode]["border"]
         )
         self.convert_button.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,2))
-        
+
         # Przycisk anuluj - drugi przycisk (secondary) - lepszy kontrast
         self.cancel_button = tk.Button(
-            self.action_buttons_frame, 
-            text="Anuluj", 
-            command=self.cancel_conversion, 
-            state=tk.DISABLED, 
+            self.action_buttons_frame,
+            text="Anuluj",
+            command=self.cancel_conversion,
+            state=tk.DISABLED,
             width=12,
-            bg=self.theme_colors[self.theme_mode]["button_secondary"], 
+            bg=self.theme_colors[self.theme_mode]["button_secondary"],
             fg=self.theme_colors[self.theme_mode]["label"],  # Zmieniono na label dla lepszego kontrastu
-            activebackground=self.theme_colors[self.theme_mode]["button_secondary_active"], 
+            activebackground=self.theme_colors[self.theme_mode]["button_secondary_active"],
             activeforeground=self.theme_colors[self.theme_mode]["label"],
-            relief=tk.FLAT, 
-            font=("Helvetica", 11, "bold"), 
-            bd=1, 
+            relief=tk.FLAT,
+            font=("Helvetica", 11, "bold"),
+            bd=1,
             highlightthickness=1,
             highlightbackground=self.theme_colors[self.theme_mode]["border"]
         )
