@@ -373,8 +373,10 @@ class PDFtoDocxConverterApp(tk.Tk):
         self.config(menu=self.menubar)
 
     def show_about_dialog(self):
-        """Display about dialog with application information."""
-        """Wyświetla okno dialogowe 'O programie' oraz instrukcję i linki do Poppler/Tesseract."""
+        """
+        Display about dialog with application information.
+        Wyświetla okno dialogowe 'O programie' oraz instrukcję i linki do Poppler/Tesseract.
+        """
         about_win = Toplevel(self)
         about_win.title("O programie - PDF Converter v4.2.0 Enterprise Edition")
         dialog_width = 500
