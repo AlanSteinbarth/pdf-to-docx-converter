@@ -1401,29 +1401,30 @@ if __name__ == "__main__":
 # =============================================================================
 
 if __name__ == "__main__":
-    """
-    ## 🚀 Main Entry Point
+    # =========================================================================
+    # 🚀 Main Entry Point
+    # 
+    # Opis: Główny punkt wejścia aplikacji PDF Converter.
+    # 
+    # Proces uruchomienia:
+    # 1. 📋 Wyświetlenie informacji o aplikacji
+    # 2. ⚙️ Ładowanie konfiguracji z YAML
+    # 3. 🏗️ Inicjalizacja głównego okna aplikacji
+    # 4. 🖥️ Uruchomienie głównej pętli GUI
+    # 5. 🛡️ Obsługa błędów krytycznych
+    # 
+    # Wymagania systemowe:
+    # - Python 3.9+
+    # - Tesseract OCR (opcjonalnie)
+    # - Poppler utils
+    # - Wymagane biblioteki z requirements.txt
+    # 
+    # Konfiguracja:
+    # - Automatyczne wykrywanie motywu systemowego
+    # - Domyślne rozmiary okna: 1024x768
+    # - Pozycja startowa: +100+100
+    # =========================================================================
     
-    **Opis**: Główny punkt wejścia aplikacji PDF Converter.
-    
-    **Proces uruchomienia**:
-    1. 📋 Wyświetlenie informacji o aplikacji
-    2. ⚙️ Ładowanie konfiguracji z YAML
-    3. 🏗️ Inicjalizacja głównego okna aplikacji
-    4. 🖥️ Uruchomienie głównej pętli GUI
-    5. 🛡️ Obsługa błędów krytycznych
-    
-    **Wymagania systemowe**:
-    - Python 3.9+
-    - Tesseract OCR (opcjonalnie)
-    - Poppler utils
-    - Wymagane biblioteki z requirements.txt
-    
-    **Konfiguracja**:
-    - Automatyczne wykrywanie motywu systemowego
-    - Domyślne rozmiary okna: 1024x768
-    - Pozycja startowa: +100+100
-    """
     print("=== PDF to DOCX/TXT Converter v4.2.0 Enterprise Edition ===")
     print("Aplikacja uruchamia się...")
     
