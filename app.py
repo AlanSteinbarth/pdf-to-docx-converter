@@ -1,41 +1,85 @@
 # =============================================================================
 # PDF to DOCX/TXT Converter with OCR v4.2.0 Enterprise Edition
 # Author: Alan Steinbarth
-# Date: 19 czerwca 2025
+# Date: 20 czerwca 2025
 # =============================================================================
 
 """
-SPIS TREŚCI:
-1. Importy i konfiguracja (linie 15-50)
-2. Klasa GuiLogHandler - obsługa logów w GUI (linie 55-70)
-3. Funkcje pomocnicze - konfiguracja, preprocessing (linie 75-180)
-4. Klasa główna PDFConverterApp (linie 185-1150)
-   4.1. Inicjalizacja i setup GUI (linie 185-280)
-   4.2. Motyw i kolory (linie 285-380)
-   4.3. Interface użytkownika (linie 385-580)
-   4.4. Obsługa plików i folderów (linie 585-680)
-   4.5. Konwersja i OCR (linie 685-920)
-   4.6. Podgląd PDF (linie 925-1020)
-   4.7. Dialogi i okna pomocnicze (linie 1025-1100)
-   4.8. Utility i czyszczenie (linie 1105-1150)
-5. Punkt wejścia aplikacji (linie 1155)
+# 📋 PDF to DOCX/TXT Converter - Dokumentacja Techniczna
 
-FUNKCJE GŁÓWNE:
-- convert_pdf_to_docx(): Konwersja PDF do DOCX z OCR
-- preprocess_image(): Preprocessing obrazu dla OCR
-- load_config(): Ładowanie konfiguracji z YAML
-- setup_gui(): Budowanie interfejsu użytkownika
-- show_pdf_preview(): Podgląd zawartości PDF
+## 🎯 Opis Aplikacji
+Zaawansowany, wieloplatformowy konwerter PDF na DOCX/TXT z automatycznym 
+rozpoznawaniem tekstu (OCR). Aplikacja oferuje nowoczesny interfejs GUI,
+wsparcie dla motywów jasny/ciemny oraz enterprise-grade funkcjonalności.
 
-ZALEŻNOŚCI ZEWNĘTRZNE:
-- Tesseract OCR (opcjonalne, dla rozpoznawania tekstu)
-- Poppler (wymagane, dla konwersji PDF)
-- Python 3.9+ z bibliotekami: tkinter, PIL, PyMuPDF, pdfminer, python-docx
+## 📑 Spis Treści
+
+### 1. 📦 Importy i Konfiguracja (linie 50-80)
+- Importy standardowych bibliotek Python
+- Importy bibliotek zewnętrznych (PyMuPDF, PIL, pdfminer)
+- Konfiguracja logowania aplikacji
+
+### 2. 🖥️ Obsługa Logów GUI (linie 85-100)
+- `GuiLogHandler`: Custom handler dla wyświetlania logów w GUI
+
+### 3. ⚙️ Funkcje Pomocnicze (linie 105-200)
+- `load_config()`: Ładowanie konfiguracji z YAML
+- `preprocess_image()`: Preprocessing obrazów dla OCR
+
+### 4. 🏗️ Klasa Główna PDFConverterApp (linie 205-1200)
+
+#### 4.1 Inicjalizacja i Setup
+- `__init__()`: Inicjalizacja aplikacji
+- `get_default_output_dir()`: Określanie domyślnego folderu wyjściowego
+
+#### 4.2 System Motywów
+- `detect_system_theme()`: Wykrywanie motywu systemowego
+- `setup_theme_colors()`: Konfiguracja kolorów motywów
+- `toggle_theme()` / `update_theme()`: Przełączanie motywów
+
+#### 4.3 Interface Użytkownika
+- `create_menu()`: Tworzenie paska menu
+- `show_about_dialog()`: Dialog "O programie"
+- `create_widgets()`: Budowanie głównego UI
+
+#### 4.4 Obsługa Plików
+- `browse_files()` / `browse_folder()`: Wybór plików/folderów
+- `_process_single_file()`: Konwersja pojedynczego pliku
+
+#### 4.5 Konwersja i OCR
+- `_perform_conversion_threaded()`: Główna logika konwersji
+- `_extract_text_with_ocr()`: Rozpoznawanie tekstu z OCR
+
+#### 4.6 Podgląd PDF
+- `_show_pdf_preview()`: Wyświetlanie podglądu PDF
+- `_get_pixmap_compat()`: Kompatybilność z różnymi wersjami PyMuPDF
+
+### 5. 🚀 Punkt Wejścia (linia 1200+)
+- Uruchomienie aplikacji
+
+## 🔧 Kluczowe Technologie
+- **GUI**: Tkinter z custom styling
+- **PDF Processing**: PyMuPDF, pdfminer
+- **OCR**: Tesseract (opcjonalne)
+- **Documents**: python-docx
+- **Configuration**: PyYAML
+- **Testing**: pytest
+
+## 🌟 Enterprise Features
+- ✅ Logowanie do pliku z rotacją
+- ✅ Konfiguracja przez YAML
+- ✅ Testy jednostkowe
+- ✅ CI/CD workflow
+- ✅ Cross-platform support
+- ✅ Error handling
+- ✅ Progress tracking
 """
 
 # =============================================================================
-# Importy i konfiguracja
+# 📦 IMPORTY I KONFIGURACJA
 # =============================================================================
+
+# Biblioteki standardowe Python
 import logging
 import logging.handlers
 import os
@@ -47,11 +91,17 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext, filedialog, Toplevel, messagebox
 import traceback
 
-import fitz
-from PIL import Image, ImageTk
-from pdfminer.high_level import extract_text, extract_pages
-import yaml
+# Biblioteki zewnętrzne
+import fitz  # PyMuPDF - przetwarzanie PDF
+from PIL import Image, ImageTk  # Pillow - przetwarzanie obrazów
+from pdfminer.high_level import extract_text, extract_pages  # pdfminer - ekstrakcja tekstu
+import yaml  # PyYAML - konfiguracja
 
+# =============================================================================
+# 📝 KONFIGURACJA LOGOWANIA I TESSERACT
+# =============================================================================
+
+# Konfiguracja Tesseract OCR
 try:
     import pytesseract as pt_module
     if platform.system() == "Darwin":  # macOS
@@ -79,8 +129,25 @@ except (OSError, AttributeError, RuntimeError) as e:
 if platform.system() == "Darwin":
     os.environ['TK_SILENCE_DEPRECATION'] = '1'
 
+# =============================================================================
+# 🖥️ OBSŁUGA LOGÓW W GUI
+# =============================================================================
+
 class GuiLogHandler(logging.Handler):
-    """Custom logging handler that displays log messages in GUI text widget."""
+    """
+    ## 📋 Custom Logging Handler for GUI
+    
+    **Opis**: Niestandardowy handler logowania, który wyświetla komunikaty 
+    logów bezpośrednio w widget tekstowym GUI aplikacji.
+    
+    **Funkcjonalność**:
+    - Przekierowuje logi do Text widget w interfejsie
+    - Formatuje komunikaty z timestamp
+    - Automatyczne przewijanie do najnowszych wpisów
+    
+    **Parametry**:
+    - `text_widget`: tkinter.Text widget do wyświetlania logów
+    """
     
     def __init__(self, text_widget):
         super().__init__()
@@ -117,9 +184,36 @@ file_handler.setLevel(logging.INFO)
 file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
 logging.getLogger().addHandler(file_handler)
 
-# --- Enterprise: ładowanie konfiguracji z config.yaml ---
+# =============================================================================
+# ⚙️ FUNKCJE POMOCNICZE I KONFIGURACJA
+# =============================================================================
+
 def load_config():
-    """Load configuration from config.yaml file with default fallbacks."""
+    """
+    ## 📁 Ładowanie Konfiguracji z YAML
+    
+    **Opis**: Wczytuje konfigurację aplikacji z pliku `config.yaml`.
+    W przypadku braku pliku lub błędu, używa wartości domyślnych.
+    
+    **Lokalizacja pliku**: `./config.yaml` (katalog roboczy)
+    
+    **Dostępne opcje**:
+    - `output_dir`: Domyślny folder wyjściowy
+    - `log_level`: Poziom logowania (DEBUG, INFO, WARNING, ERROR)
+    - `ocr_language`: Język OCR (domyślnie 'pol')
+    - `ocr_dpi`: DPI dla OCR (domyślnie 300)
+    - `ocr_psm`: Page Segmentation Mode (domyślnie 6)
+    
+    **Returns**:
+        dict: Słownik z konfiguracją aplikacji
+        
+    **Example**:
+        ```yaml
+        output_dir: "~/Desktop"
+        log_level: "INFO"
+        ocr_language: "pol"
+        ```
+    """
     # Szukaj config.yaml w bieżącym katalogu roboczym (dla testów i uruchomień enterprise)
     config_path = os.path.join(os.getcwd(), 'config.yaml')
     default = {
@@ -142,20 +236,62 @@ def load_config():
         logging.warning("Nie udało się wczytać config.yaml: %s", e)
         return default
 
+# =============================================================================
+# 🏗️ KLASA GŁÓWNA APLIKACJI
+# =============================================================================
+
 class PDFtoDocxConverterApp(tk.Tk):
     """
-    Main application class for PDF to DOCX/TXT converter with OCR support.
+    ## 🎯 Główna Klasa Aplikacji PDF Converter
     
-    Features:
-    - GUI interface with dark/light theme support
-    - PDF to DOCX/TXT conversion
-    - OCR text recognition for scanned documents
-    - Batch processing support
-    - Progress tracking and logging
+    **Opis**: Główna klasa aplikacji konwertera PDF do DOCX/TXT z obsługą OCR.
+    Dziedziczy po `tkinter.Tk` i implementuje pełny interfejs użytkownika.
+    
+    **Główne funkcjonalności**:
+    - 📄 Konwersja PDF → DOCX/TXT
+    - 🔍 OCR dla zeskanowanych dokumentów
+    - 🎨 System motywów jasny/ciemny
+    - 📊 Progress tracking i logowanie
+    - 🖼️ Podgląd PDF
+    - ⚙️ Konfiguracja przez YAML
+    - 🔄 Batch processing
+    
+    **Obsługiwane platformy**: macOS, Windows, Linux
+    
+    **Architektura**:
+    - Model-View z separacją logiki biznesowej
+    - Threading dla operacji długotrwałych
+    - Event-driven GUI updates
+    - Error handling z graceful degradation
     """
     
     def get_default_output_dir(self):
-        """Określa domyślny folder wyjściowy w zależności od systemu operacyjnego"""
+        """
+        ## 📁 Określanie Domyślnego Folderu Wyjściowego
+        
+        **Opis**: Automatycznie wykrywa i ustawia najbardziej odpowiedni 
+        folder wyjściowy na podstawie systemu operacyjnego.
+        
+        **Logika wyboru**:
+        
+        ### Windows:
+        1. `~/OneDrive/Pulpit` (jeśli istnieje)
+        2. `~/Desktop` (fallback)
+        3. `~` (ostateczny fallback)
+        
+        ### macOS:
+        1. `~/Desktop` (standardowy pulpit)
+        2. `~` (fallback)
+        
+        ### Linux:
+        1. `~/Desktop` (standardowy pulpit)
+        2. `~` (fallback)
+        
+        **Returns**:
+            str: Ścieżka do domyślnego folderu wyjściowego
+            
+        **Obsługa błędów**: Graceful fallback do katalogu domowego użytkownika
+        """
         system = platform.system()
         try:
             if system == "Windows":
@@ -305,8 +441,37 @@ class PDFtoDocxConverterApp(tk.Tk):
         if platform.system() == "Darwin":
             self.after(200, self._bring_to_front_macos)
 
+    # =========================================================================
+    # 🎨 SYSTEM MOTYWÓW I KOLORÓW
+    # =========================================================================
+
     def detect_system_theme(self):
-        """Wykrywa motyw systemowy (light/dark) na macOS i Windows. Domyślnie light."""
+        """
+        ## 🎨 Wykrywanie Motywu Systemowego
+        
+        **Opis**: Automatycznie wykrywa motyw systemowy (jasny/ciemny) 
+        na różnych platformach operacyjnych.
+        
+        **Obsługiwane platformy**:
+        
+        ### macOS:
+        - Odczytuje `AppleInterfaceStyle` z defaults
+        - "Dark" → motyw ciemny
+        - Brak wartości → motyw jasny
+        
+        ### Windows:
+        - Sprawdza registry `AppsUseLightTheme`
+        - 0 → motyw ciemny
+        - 1 → motyw jasny
+        
+        ### Linux:
+        - Domyślnie motyw jasny (brak automatycznego wykrywania)
+        
+        **Returns**:
+            str: "light" lub "dark"
+            
+        **Fallback**: W przypadku błędu zwraca "light"
+        """
         try:
             if sys.platform == "darwin":
                 result = subprocess.run([
@@ -644,8 +809,32 @@ class PDFtoDocxConverterApp(tk.Tk):
             logging.error("Błąd podczas konwersji pliku '%s': %s", base_name, e)
             return False
 
+    # =========================================================================
+    # 🔄 LOGIKA KONWERSJI I PRZETWARZANIA
+    # =========================================================================
+
     def _perform_conversion_threaded(self):
-        """Główna logika konwersji wykonywana w wątku."""
+        """
+        ## 🔄 Główna Logika Konwersji (Threading)
+        
+        **Opis**: Wykonuje konwersję plików PDF w osobnym wątku, 
+        aby nie blokować interfejsu użytkownika.
+        
+        **Proces konwersji**:
+        1. 📂 Iteracja przez wybrane pliki
+        2. 📄 Przetwarzanie każdego pliku PDF
+        3. 🔍 Ekstrakcja tekstu (pdfminer)
+        4. 🖼️ OCR dla skanów (jeśli potrzebne)
+        5. 💾 Zapis do DOCX/TXT
+        6. 📊 Aktualizacja progress bar
+        
+        **Threading safety**:
+        - Używa `self.cancel_event` do przerwania
+        - Thread-safe komunikacja z GUI przez kolejki
+        - Graceful cleanup w przypadku błędów
+        
+        **Error handling**: Kontynuuje przetwarzanie mimo błędów w pojedynczych plikach
+        """
         # print("DEBUG: _perform_conversion_threaded started") # DEBUG
         files_converted_count = 0
         try:
@@ -1198,6 +1387,48 @@ if __name__ == "__main__":
         app = PDFtoDocxConverterApp()
         app.update_idletasks()
         app.deiconify()
+        app.lift()
+        app.focus_force()
+        app.geometry("1024x768+100+100")
+        app.mainloop()
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        print(f"[FATAL ERROR] Aplikacja nie uruchomiła się! Szczegóły: {e}")
+        traceback.print_exc()
+    print("=== KONIEC PROGRAMU ===")
+
+# =============================================================================
+# 🚀 PUNKT WEJŚCIA APLIKACJI
+# =============================================================================
+
+if __name__ == "__main__":
+    """
+    ## 🚀 Main Entry Point
+    
+    **Opis**: Główny punkt wejścia aplikacji PDF Converter.
+    
+    **Proces uruchomienia**:
+    1. 📋 Wyświetlenie informacji o aplikacji
+    2. ⚙️ Ładowanie konfiguracji z YAML
+    3. 🏗️ Inicjalizacja głównego okna aplikacji
+    4. 🖥️ Uruchomienie głównej pętli GUI
+    5. 🛡️ Obsługa błędów krytycznych
+    
+    **Wymagania systemowe**:
+    - Python 3.9+
+    - Tesseract OCR (opcjonalnie)
+    - Poppler utils
+    - Wymagane biblioteki z requirements.txt
+    
+    **Konfiguracja**:
+    - Automatyczne wykrywanie motywu systemowego
+    - Domyślne rozmiary okna: 1024x768
+    - Pozycja startowa: +100+100
+    """
+    print("=== PDF to DOCX/TXT Converter v4.2.0 Enterprise Edition ===")
+    print("Aplikacja uruchamia się...")
+    
+    try:
+        app = PDFtoDocxConverterApp()
         app.lift()
         app.focus_force()
         app.geometry("1024x768+100+100")
