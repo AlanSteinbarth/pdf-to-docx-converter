@@ -1,6 +1,8 @@
 # Zrzuty ekranu aplikacji PDF to DOCX Converter v4.2.0
 
-Ten folder zawiera zrzuty ekranu i grafikę promocyjną przedstawiające interfejs i funkcjonalność aplikacji.
+**Ostatnia aktualizacja**: 20 czerwca 2025
+
+Ten folder zawiera zrzuty ekranu i grafikę promocyjną przedstawiające interfejs i funkcjonalność aplikacji z enterprise-grade dokumentacją.
 
 ## Pliki
 
